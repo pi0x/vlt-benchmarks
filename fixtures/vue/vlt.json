@@ -1,7 +1,7 @@
 {
   "config": {
     "registries": {
-      "npm": "https://registry.vlt.io/vlt-benchmarks/npm/"
+      "npm": "https://registry.npmjs.org/"
     }
   }
 }
