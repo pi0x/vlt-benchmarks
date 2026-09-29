@@ -8,7 +8,7 @@ on:
         default: '["next", "astro", "vue", "svelte", "large", "babylon"]'
       variations:
         description: "The benchmark variations to run (build/build-cache/run are added via matrix include pairs)"
-        default: '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules", "registry-clean", "registry-lockfile"]'
+        default: '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules"]'
       binaries:
         description: "The binaries to run the benchmarks on"
         default: '"npm,yarn,berry,zpm,pnpm,pacquet,vlt,bun,deno,aube,upm,nx,turbo,vp,node"'
@@ -18,9 +18,6 @@ on:
       runs:
         description: "The number of runs on each benchmark"
         default: "5"
-  schedule:
-    # GitHub Actions cron uses UTC. 10:17 UTC ~= 2:17 AM Pacific (PST).
-    - cron: "17 10 * * *"
 
 # Prevent multiple runs from interfering with each other
 concurrency:
@@ -93,7 +90,7 @@ jobs:
           partial=false
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             [[ "$IN_FIXTURES" == '["next", "astro", "vue", "svelte", "large", "babylon"]' ]] || partial=true
-            [[ "$IN_VARIATIONS" == '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules", "registry-clean", "registry-lockfile"]' ]] || partial=true
+            [[ "$IN_VARIATIONS" == '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules"]' ]] || partial=true
             [[ "$IN_BINARIES" == '"npm,yarn,berry,zpm,pnpm,pacquet,vlt,bun,deno,aube,upm,nx,turbo,vp,node"' ]] || partial=true
             [[ "$IN_WARMUP" == "2" ]] || partial=true
             [[ "$IN_RUNS" == "5" ]] || partial=true
@@ -114,7 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         fixture: ${{ fromJson((github.event_name == 'push' && github.ref != 'refs/heads/main') && '["next", "astro", "vue", "svelte"]' || (inputs.fixtures || '["next", "astro", "vue", "svelte", "large", "babylon"]')) }}
-        variation: ${{ fromJson(inputs.variations || '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules", "registry-clean", "registry-lockfile"]') }}
+        variation: ${{ fromJson(inputs.variations || '["clean", "node_modules", "cache", "cache+node_modules", "cache+lockfile", "cache+lockfile+node_modules", "ci", "lockfile", "lockfile+node_modules"]') }}
         include:
           - variation: "build"
             fixture: "next"
@@ -222,7 +219,7 @@ jobs:
     name: "Process Results"
     runs-on: ubuntu-24.04-arm
     needs: [detect-changes, benchmark]
-    if: needs.detect-changes.outputs.app_only != 'true'
+    if: ${{ !cancelled() && needs.detect-changes.outputs.app_only != 'true' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6

@@ -42,7 +42,7 @@ export const useProcessCountData = (
 
       for (const fixture of fixtures) {
         try {
-          const url = `/latest/${fixture}-${variation}-process-count.json`;
+          const url = `latest/${fixture}-${variation}-process-count.json`;
           const response = await fetch(url);
 
           if (response.ok) {

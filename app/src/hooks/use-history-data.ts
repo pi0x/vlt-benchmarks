@@ -183,7 +183,7 @@ export const useHistoryData = (): UseHistoryDataReturn => {
         const tasks = dateStrings.map(
           (date) => async (): Promise<FetchResult> => {
             try {
-              const response = await fetch(`/${date}/chart-data.json`);
+              const response = await fetch(`${date}/chart-data.json`);
               if (!response.ok) return null;
               const data: ChartDataResponse = await response.json();
               return { date, data };

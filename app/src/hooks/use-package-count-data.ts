@@ -42,7 +42,7 @@ export const usePackageCountData = (
 
       for (const fixture of fixtures) {
         try {
-          const url = `/latest/${fixture}-${variation}-package-count.json`;
+          const url = `latest/${fixture}-${variation}-package-count.json`;
           const response = await fetch(url);
 
           if (response.ok) {
